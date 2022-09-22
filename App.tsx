@@ -11,6 +11,7 @@
 import React, {Fragment, useEffect, type PropsWithChildren} from 'react';
 import remoteConfig from '@react-native-firebase/remote-config';
 import {
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -28,6 +29,8 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import { fetchConfig, getVal, refreshConfig } from './src/services/firebase';
+import Banner1 from './src/components/banner1';
+import Banner2 from './src/components/banner2';
 
 const Section: React.FC<
   PropsWithChildren<{
@@ -60,6 +63,7 @@ const Section: React.FC<
 };
 
 const App = () => {
+  const [val, setVal] = React.useState(false)
   const isDarkMode = useColorScheme() === 'dark';
  
 useEffect(()=>{
@@ -69,17 +73,15 @@ useEffect(()=>{
     console.log('hadbjda',remoteConfig().lastFetchStatus)
     remoteConfig().fetch(0).then(()=>{
       remoteConfig().activate().then(()=>{
-        console.log('The value is==>',remoteConfig().getValue('nVar').asString())
+        setVal(remoteConfig().getValue('showBanner').asBoolean())
+        console.log(val)
       })
-
-      
     })
   })
 
-  
+  refreshConfig()
 
-
-},[])
+},[val])
   
 
   const backgroundStyle = {
@@ -87,36 +89,12 @@ useEffect(()=>{
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={{flex: 1}}>
+      {
+        val ? <Banner1/> : <Banner2/>
+}
+
+    </View>
   );
 };
 
